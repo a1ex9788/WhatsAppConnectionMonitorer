@@ -1,12 +1,17 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace WhatsAppConnectionMonitorer
 {
     public class Program
     {
+        private readonly static string executionFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        private readonly static string logsFilePath = Path.Combine(executionFolder, "logsFile.txt");
+
         public async static Task Main()
         {
             IWebDriver browser = null;
@@ -29,7 +34,7 @@ namespace WhatsAppConnectionMonitorer
 
                 Console.WriteLine("Sing in completed successfully. Starting monitoring the connection...");
 
-                MonitorConnection(browser);
+                await MonitorConnection(browser);
             }
             catch (Exception e)
             {
@@ -62,7 +67,7 @@ namespace WhatsAppConnectionMonitorer
                     }
                     catch
                     {
-                        Console.Error.WriteLine("Main page not reached yet.");
+                        Console.Error.WriteLine("Main page not reached yet. Please, sing in.");
                     }
 
                     lastPageSource = currentPageSource;
@@ -73,7 +78,7 @@ namespace WhatsAppConnectionMonitorer
             while (!mainPageReached);
         }
 
-        private static void MonitorConnection(IWebDriver browser)
+        private static async Task MonitorConnection(IWebDriver browser)
         {
             // TODO: Extract the name of the contact to a configuration file.
             string contactToMonitor = "AaMama";
@@ -82,15 +87,23 @@ namespace WhatsAppConnectionMonitorer
 
             int failsCount = 0, maxFailsCount = 3;
 
+            File.AppendAllText(logsFilePath, $"----- Connection monitored for {contactToMonitor} -----\n");
+
             while (true)
             {
                 try
                 {
-                    IWebElement lastConnectionLabel = browser.FindElement(By.XPath(".//*[@class='_2YPr_ i0jNr selectable-text copyable-text']"));
+                    IWebElement connectionStatusLabel = browser.FindElement(By.XPath(".//*[@class='_2YPr_ i0jNr selectable-text copyable-text']"));
 
                     while (true)
                     {
-                        Console.WriteLine(lastConnectionLabel.Text);
+                        string connectionStatus = $"{DateTime.Now}:\t{connectionStatusLabel.Text}\n";
+
+                        Console.Write(connectionStatus);
+
+                        File.AppendAllText(logsFilePath, connectionStatus);
+
+                        await Task.Delay(1000);
                     }
                 }
                 catch (Exception e)
@@ -101,6 +114,8 @@ namespace WhatsAppConnectionMonitorer
                     }
 
                     Console.Error.WriteLine($"The connection status of the contact '{contactToMonitor}' could not be retrieved. Retrying {++failsCount}/{maxFailsCount}");
+
+                    await Task.Delay(500);
                 }
             }
         }
