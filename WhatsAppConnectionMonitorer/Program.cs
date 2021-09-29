@@ -18,8 +18,10 @@ namespace WhatsAppConnectionMonitorer
 
             try
             {
-                // TODO: Investigate the shown errors.
-                browser = new ChromeDriver()
+                ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+                service.HideCommandPromptWindow = true;
+
+                browser = new ChromeDriver(service)
                 {
                     Url = "https://web.whatsapp.com/",
                 };
