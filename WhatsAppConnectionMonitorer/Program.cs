@@ -33,6 +33,7 @@ namespace WhatsAppConnectionMonitorer
             }
             catch (Exception e)
             {
+                // TODO: Detect when the browser has been closed.
                 Console.Error.WriteLine($"An unexpected error occurred: {e.Message}");
             }
             finally
@@ -80,6 +81,8 @@ namespace WhatsAppConnectionMonitorer
 
             EnterIntoContactToMonitorChat(browser, contactToMonitor);
 
+            int failsCount = 0, maxFailsCount = 3;
+
             while (true)
             {
                 try
@@ -91,10 +94,14 @@ namespace WhatsAppConnectionMonitorer
                         Console.WriteLine(lastConnectionLabel.Text);
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    // TODO: Think what to do with this catch. Maybe create a count of fails and exit if
-                    // it is very high.
+                    Console.WriteLine($"The connection status of the contact '{contactToMonitor}' could not be retrieved. Retrying {++failsCount}/{maxFailsCount}");
+
+                    if (failsCount == maxFailsCount)
+                    {
+                        throw new Exception($"The connection status of the contact '{contactToMonitor}' could not be definitely retrieved.", e);
+                    }
                 }
             }
         }
