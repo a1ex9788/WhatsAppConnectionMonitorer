@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
+using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -82,8 +83,7 @@ namespace WhatsAppConnectionMonitorer
 
         private static async Task MonitorConnection(IWebDriver browser)
         {
-            // TODO: Extract the name of the contact to a configuration file.
-            string contactToMonitor = "AaMama";
+            string contactToMonitor = ConfigurationManager.AppSettings.Get("ContactToMonitor");
 
             EnterIntoContactToMonitorChat(browser, contactToMonitor);
 
