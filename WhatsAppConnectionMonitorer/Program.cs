@@ -26,9 +26,9 @@ namespace WhatsAppConnectionMonitorer
                     Url = "https://web.whatsapp.com/",
                 };
 
-                Console.WriteLine("WhatsAppConnectionMonitorer started.");
-
                 //browser.Manage().Window.Maximize();
+
+                Console.WriteLine("WhatsAppConnectionMonitorer started.");
 
                 Console.WriteLine("Waiting for sing in...");
 
@@ -99,11 +99,12 @@ namespace WhatsAppConnectionMonitorer
 
                     while (true)
                     {
-                        string connectionStatus = $"{DateTime.Now}:\t{connectionStatusLabel.Text}\n";
+                        string connectionStatus = connectionStatusLabel.Text;
+                        string connectionStatusLog = $"{DateTime.Now}:\t{connectionStatus}\n";
 
-                        Console.Write(connectionStatus);
+                        Console.Write(connectionStatusLog);
 
-                        File.AppendAllText(logsFilePath, connectionStatus);
+                        File.AppendAllText(logsFilePath, connectionStatusLog);
 
                         await Task.Delay(1000);
                     }
