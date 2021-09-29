@@ -76,18 +76,9 @@ namespace WhatsAppConnectionMonitorer
         private static void MonitorConnection(IWebDriver browser)
         {
             // TODO: Extract the name of the contact to a configuration file.
-            string contact = "AaMama";
+            string contactToMonitor = "AaMama";
 
-            try
-            {
-                IWebElement chatButton = browser.FindElement(By.XPath($".//*[@title='{contact}']"));
-
-                chatButton.Click();
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"The contact '{contact}' was not found.", e);
-            }
+            EnterIntoContactToMonitorChat(browser, contactToMonitor);
 
             while (true)
             {
@@ -105,6 +96,20 @@ namespace WhatsAppConnectionMonitorer
                     // TODO: Think what to do with this catch. Maybe create a count of fails and exit if
                     // it is very high.
                 }
+            }
+        }
+
+        private static void EnterIntoContactToMonitorChat(IWebDriver browser, string contactToMonitor)
+        {
+            try
+            {
+                IWebElement chatButton = browser.FindElement(By.XPath($".//*[@title='{contactToMonitor}']"));
+
+                chatButton.Click();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"The contact '{contactToMonitor}' was not found.", e);
             }
         }
     }
