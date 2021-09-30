@@ -105,7 +105,10 @@ namespace WhatsAppConnectionMonitorer
         {
             int failsCount = 0, maxFailsCount = 3;
 
-            File.AppendAllText(logsFilePath, $"----- Connection monitored for {contactToMonitor} -----\n");
+            string initialMessage = $"----- Connection monitored for {contactToMonitor} -----\n";
+
+            Console.Write(initialMessage);
+            File.AppendAllText(logsFilePath, initialMessage);
 
             while (true)
             {
@@ -119,7 +122,6 @@ namespace WhatsAppConnectionMonitorer
                         string connectionStatusLog = $"{DateTime.Now}:\t{connectionStatus}\n";
 
                         Console.Write(connectionStatusLog);
-
                         File.AppendAllText(logsFilePath, connectionStatusLog);
 
                         await Task.Delay(1000);
