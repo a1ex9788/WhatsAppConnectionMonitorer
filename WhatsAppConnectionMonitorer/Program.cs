@@ -13,6 +13,8 @@ namespace WhatsAppConnectionMonitorer
         private readonly static string executionFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         private readonly static string logsFilePath = Path.Combine(executionFolder, "logsFile.txt");
 
+        private readonly static string contactToMonitor = ConfigurationManager.AppSettings.Get("ContactToMonitor");
+
         public async static Task Main()
         {
             IWebDriver browser = null;
@@ -35,7 +37,11 @@ namespace WhatsAppConnectionMonitorer
 
                 await WaitForSingIn(browser);
 
-                Console.WriteLine("Sing in completed successfully. Starting monitoring the connection...");
+                Console.WriteLine("Sing in completed successfully. Entering into contact to monitor chat...");
+
+                EnterIntoContactToMonitorChat(browser);
+
+                Console.WriteLine("Entered into contact to monitor chat. Starting monitoring the connection...");
 
                 await MonitorConnection(browser);
             }
@@ -81,12 +87,22 @@ namespace WhatsAppConnectionMonitorer
             while (!mainPageReached);
         }
 
+        private static void EnterIntoContactToMonitorChat(IWebDriver browser)
+        {
+            try
+            {
+                IWebElement chatButton = browser.FindElement(By.XPath($".//*[@title='{contactToMonitor}']"));
+
+                chatButton.Click();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"The contact '{contactToMonitor}' chat was not found.", e);
+            }
+        }
+
         private static async Task MonitorConnection(IWebDriver browser)
         {
-            string contactToMonitor = ConfigurationManager.AppSettings.Get("ContactToMonitor");
-
-            EnterIntoContactToMonitorChat(browser, contactToMonitor);
-
             int failsCount = 0, maxFailsCount = 3;
 
             File.AppendAllText(logsFilePath, $"----- Connection monitored for {contactToMonitor} -----\n");
@@ -104,6 +120,7 @@ namespace WhatsAppConnectionMonitorer
 
                         Console.Write(connectionStatusLog);
 
+                        // TODO: Save only when the status changes.
                         File.AppendAllText(logsFilePath, connectionStatusLog);
 
                         await Task.Delay(1000);
@@ -120,20 +137,6 @@ namespace WhatsAppConnectionMonitorer
 
                     await Task.Delay(500);
                 }
-            }
-        }
-
-        private static void EnterIntoContactToMonitorChat(IWebDriver browser, string contactToMonitor)
-        {
-            try
-            {
-                IWebElement chatButton = browser.FindElement(By.XPath($".//*[@title='{contactToMonitor}']"));
-
-                chatButton.Click();
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"The contact '{contactToMonitor}' was not found.", e);
             }
         }
     }
