@@ -120,7 +120,6 @@ namespace WhatsAppConnectionMonitorer
 
                         Console.Write(connectionStatusLog);
 
-                        // TODO: Save only when the status changes.
                         File.AppendAllText(logsFilePath, connectionStatusLog);
 
                         await Task.Delay(1000);
