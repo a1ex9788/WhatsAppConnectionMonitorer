@@ -10,10 +10,4 @@
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="94.0.4606.4101" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="App.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>
